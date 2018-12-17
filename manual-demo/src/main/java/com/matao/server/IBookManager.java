@@ -17,4 +17,8 @@ public interface IBookManager extends IInterface {
     List<Book> getBooks() throws RemoteException;
 
     void addBook(Book book) throws RemoteException;
+
+    void registerListener(OnNewBookArrivedListener listener) throws RemoteException;
+
+    void unregisterListener(OnNewBookArrivedListener listener) throws RemoteException;
 }

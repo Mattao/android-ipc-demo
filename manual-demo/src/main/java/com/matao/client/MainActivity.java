@@ -13,9 +13,11 @@ import android.view.View;
 
 import com.matao.Book;
 import com.matao.R;
+import com.matao.server.BookManagerStub;
 import com.matao.server.IBookManager;
+import com.matao.server.OnNewBookArrivedListener;
+import com.matao.server.OnNewBookArrivedListenerStub;
 import com.matao.server.RemoteService;
-import com.matao.server.Stub;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +27,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private boolean isConnected = false;
     private IBookManager bookManager;
+    private OnNewBookArrivedListener listener = new OnNewBookArrivedListenerStub() {
+        @Override
+        public void onNewBookArrived(Book newBook) throws RemoteException {
+            Log.d(TAG, "new book arrived callback: " + newBook.toString());
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,21 +43,52 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (bookManager != null) {
-                    try {
-                        List<Book> books = bookManager.getBooks();
-                        Log.d(TAG, Arrays.toString(books.toArray()));
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                List<Book> books = bookManager.getBooks();
+                                Log.d(TAG, Arrays.toString(books.toArray()));
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
                 }
             }
         });
         findViewById(R.id.add_bt).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Book book = new Book("Android In Action", 45.1);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Book book = new Book("Android In Action", 45.1);
+                        try {
+                            bookManager.addBook(book);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            }
+        });
+
+        findViewById(R.id.add_listener_bt).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 try {
-                    bookManager.addBook(book);
+                    bookManager.registerListener(listener);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        findViewById(R.id.remove_listener_bt).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    bookManager.unregisterListener(listener);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -81,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             isConnected = true;
-            bookManager = Stub.asInterface(service);
+            bookManager = BookManagerStub.asInterface(service);
         }
 
         @Override
