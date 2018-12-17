@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
 /**
  * Created by matao on 2018/12/17
  */
-public abstract class Stub extends Binder implements ICompute {
+public abstract class Stub extends Binder implements IComputeManager {
 
     public static final int TRANSACTION_ADD = IBinder.FIRST_CALL_TRANSACTION;
 
@@ -42,12 +42,12 @@ public abstract class Stub extends Binder implements ICompute {
         return super.onTransact(code, data, reply, flags);
     }
 
-    public static ICompute asInterface(IBinder binder) {
+    public static IComputeManager asInterface(IBinder binder) {
         if (binder == null) return null;
 
         IInterface computeInterface = binder.queryLocalInterface(DESCRIPTOR);
-        if (computeInterface instanceof ICompute) {
-            return (ICompute) computeInterface;
+        if (computeInterface instanceof IComputeManager) {
+            return (IComputeManager) computeInterface;
         }
         return new Proxy(binder);
     }

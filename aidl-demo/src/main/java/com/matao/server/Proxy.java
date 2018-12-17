@@ -7,7 +7,7 @@ import android.os.RemoteException;
 /**
  * Created by matao on 2018/12/17
  */
-public class Proxy implements ICompute {
+public class Proxy implements IComputeManager {
 
     private IBinder remote;
 

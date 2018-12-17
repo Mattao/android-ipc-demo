@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.matao.R;
-import com.matao.server.ICompute;
+import com.matao.server.IComputeManager;
 import com.matao.server.RemoteService;
 import com.matao.server.Stub;
 
@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private boolean isConnected = false;
-    private ICompute compute;
+    private IComputeManager computeManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +50,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             isConnected = true;
-            compute = Stub.asInterface(service);
-            if (compute != null) {
-                int result = compute.add(1, 2);
+            computeManager = Stub.asInterface(service);
+            if (computeManager != null) {
+                int result = computeManager.add(1, 2);
                 Log.d(TAG, "result: " + result);
             }
         }

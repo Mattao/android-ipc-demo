@@ -5,9 +5,9 @@ import android.os.IInterface;
 /**
  * Define services that the RemoveServer provides.
  */
-public interface ICompute extends IInterface {
+public interface IComputeManager extends IInterface {
 
-    String DESCRIPTOR = "com.matao.server.ICompute";
+    String DESCRIPTOR = "com.matao.server.IComputeManager";
 
     int add(int a, int b);
 }
