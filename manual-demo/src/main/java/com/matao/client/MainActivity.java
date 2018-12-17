@@ -4,26 +4,57 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.IBinder;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
+import com.matao.Book;
 import com.matao.R;
-import com.matao.server.IComputeManager;
+import com.matao.server.IBookManager;
 import com.matao.server.RemoteService;
 import com.matao.server.Stub;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private boolean isConnected = false;
-    private IComputeManager computeManager;
+    private IBookManager bookManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        findViewById(R.id.get_bt).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bookManager != null) {
+                    try {
+                        List<Book> books = bookManager.getBooks();
+                        Log.d(TAG, Arrays.toString(books.toArray()));
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        findViewById(R.id.add_bt).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Book book = new Book("Android In Action", 45.1);
+                try {
+                    bookManager.addBook(book);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
@@ -50,11 +81,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             isConnected = true;
-            computeManager = Stub.asInterface(service);
-            if (computeManager != null) {
-                int result = computeManager.add(1, 2);
-                Log.d(TAG, "result: " + result);
-            }
+            bookManager = Stub.asInterface(service);
         }
 
         @Override

@@ -7,15 +7,30 @@ import android.os.Parcel;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 
+import com.matao.Book;
+
+import java.util.List;
+
 /**
  * Created by matao on 2018/12/17
  */
-public abstract class Stub extends Binder implements IComputeManager {
+public abstract class Stub extends Binder implements IBookManager {
 
-    public static final int TRANSACTION_ADD = IBinder.FIRST_CALL_TRANSACTION;
+    public static final int TRANSACTION_ADD_BOOK = IBinder.FIRST_CALL_TRANSACTION;
+    public static final int TRANSACTION_GET_BOOKS = IBinder.FIRST_CALL_TRANSACTION + 1;
 
     public Stub() {
         this.attachInterface(this, DESCRIPTOR);
+    }
+
+    public static IBookManager asInterface(IBinder binder) {
+        if (binder == null) return null;
+
+        IInterface iInterface = binder.queryLocalInterface(DESCRIPTOR);
+        if (iInterface instanceof IBookManager) {
+            return (IBookManager) iInterface;
+        }
+        return new Proxy(binder);
     }
 
     @Override
@@ -29,26 +44,23 @@ public abstract class Stub extends Binder implements IComputeManager {
             case INTERFACE_TRANSACTION:
                 reply.writeString(DESCRIPTOR);
                 return true;
-            case TRANSACTION_ADD:
+            case TRANSACTION_ADD_BOOK:
                 data.enforceInterface(DESCRIPTOR);
-                int a = data.readInt();
-                int b = data.readInt();
-                int result = add(a, b);
+                Book book = null;
+                if (data.readInt() != 0) {
+                    book = Book.CREATOR.createFromParcel(data);
+                }
+                addBook(book);
                 reply.writeNoException();
-                reply.writeInt(result);
+                return true;
+            case TRANSACTION_GET_BOOKS:
+                data.enforceInterface(DESCRIPTOR);
+                List<Book> result = this.getBooks();
+                reply.writeNoException();
+                reply.writeTypedList(result);
                 return true;
             default:
+                return super.onTransact(code, data, reply, flags);
         }
-        return super.onTransact(code, data, reply, flags);
-    }
-
-    public static IComputeManager asInterface(IBinder binder) {
-        if (binder == null) return null;
-
-        IInterface computeInterface = binder.queryLocalInterface(DESCRIPTOR);
-        if (computeInterface instanceof IComputeManager) {
-            return (IComputeManager) computeInterface;
-        }
-        return new Proxy(binder);
     }
 }

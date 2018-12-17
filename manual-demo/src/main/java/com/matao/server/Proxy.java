@@ -4,10 +4,14 @@ import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
 
+import com.matao.Book;
+
+import java.util.List;
+
 /**
  * Created by matao on 2018/12/17
  */
-public class Proxy implements IComputeManager {
+public class Proxy implements IBookManager {
 
     private IBinder remote;
 
@@ -16,26 +20,42 @@ public class Proxy implements IComputeManager {
     }
 
     @Override
-    public int add(int a, int b) {
+    public List<Book> getBooks() throws RemoteException {
         Parcel data = Parcel.obtain();
         Parcel reply = Parcel.obtain();
-        int result = 0;
+        List<Book> result;
 
         try {
             data.writeInterfaceToken(DESCRIPTOR);
-            data.writeInt(a);
-            data.writeInt(b);
-            remote.transact(Stub.TRANSACTION_ADD, data, reply, 0);
+            remote.transact(Stub.TRANSACTION_GET_BOOKS, data, reply, 0);
             reply.readException();
-            result = reply.readInt();
-        } catch (RemoteException e) {
-            e.printStackTrace();
+            result = reply.createTypedArrayList(Book.CREATOR);
         } finally {
-            reply.recycle();
             data.recycle();
+            reply.recycle();
         }
-
         return result;
+    }
+
+    @Override
+    public void addBook(Book book) throws RemoteException {
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+
+        try {
+            data.writeInterfaceToken(DESCRIPTOR);
+            if (book != null) {
+                data.writeInt(1);
+                book.writeToParcel(data, 0);
+            } else {
+                data.writeInt(0);
+            }
+            remote.transact(Stub.TRANSACTION_ADD_BOOK, data, reply, 0);
+            reply.readException();
+        } finally {
+            data.recycle();
+            reply.recycle();
+        }
     }
 
     @Override
