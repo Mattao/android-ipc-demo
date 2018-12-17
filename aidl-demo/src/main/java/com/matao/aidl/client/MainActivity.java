@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.matao.aidl.Book;
 import com.matao.aidl.IBookManager;
+import com.matao.aidl.OnNewBookArrivedListener;
 import com.matao.aidl.R;
 import com.matao.aidl.server.RemoteService;
 
@@ -24,6 +25,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private boolean isConnected = false;
     private IBookManager bookManager;
+    private OnNewBookArrivedListener listener = new OnNewBookArrivedListener.Stub() {
+        @Override
+        public void onNewBookArrived(Book newBook) throws RemoteException {
+            Log.d(TAG, "new book arrived callback: " + newBook.toString());
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +56,27 @@ public class MainActivity extends AppCompatActivity {
                 Book book = new Book("Android In Action", 45.1);
                 try {
                     bookManager.addBook(book);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        findViewById(R.id.add_listener_bt).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    bookManager.registerListener(listener);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        findViewById(R.id.remove_listener_bt).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    bookManager.unregisterListener(listener);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }

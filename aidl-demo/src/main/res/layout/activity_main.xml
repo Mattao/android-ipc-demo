@@ -29,4 +29,26 @@
         app:layout_constraintTop_toBottomOf="@+id/get_bt"
         tools:ignore="HardcodedText" />
 
+    <Button
+        android:id="@+id/add_listener_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:text="add listener"
+        app:layout_constraintStart_toEndOf="@+id/get_bt"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/remove_listener_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:text="remove listener"
+        app:layout_constraintStart_toEndOf="@+id/add_bt"
+        app:layout_constraintTop_toBottomOf="@+id/add_listener_bt"
+        tools:ignore="HardcodedText" />
+
 </android.support.constraint.ConstraintLayout>
