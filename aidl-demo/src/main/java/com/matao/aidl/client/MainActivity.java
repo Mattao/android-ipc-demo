@@ -41,24 +41,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (bookManager != null) {
-                    try {
-                        List<Book> books = bookManager.getBooks();
-                        Log.d(TAG, Arrays.toString(books.toArray()));
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                List<Book> books = bookManager.getBooks();
+                                Log.d(TAG, Arrays.toString(books.toArray()));
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
                 }
             }
         });
         findViewById(R.id.add_bt).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Book book = new Book("Android In Action", 45.1);
-                try {
-                    bookManager.addBook(book);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Book book = new Book("Android In Action", 45.1);
+                            bookManager.addBook(book);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
             }
         });
 

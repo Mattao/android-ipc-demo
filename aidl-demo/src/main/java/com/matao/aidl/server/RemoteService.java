@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.matao.aidl.Book;
@@ -39,6 +40,7 @@ public class RemoteService extends Service {
     private IBinder binder = new IBookManager.Stub() {
         @Override
         public List<Book> getBooks() throws RemoteException {
+            SystemClock.sleep(1500);    // mock long-running operation
             return books;
         }
 
@@ -47,11 +49,7 @@ public class RemoteService extends Service {
             if (book == null) return;
 
             books.add(book);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            SystemClock.sleep(1500);    // mock long-running operation
             Log.d(TAG, "books: " + book.toString());
 
             int size = listeners.beginBroadcast();
