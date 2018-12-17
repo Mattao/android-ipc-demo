@@ -1,1 +1,1 @@
-include ':manual-demo'
+include ':manual-demo', ':aidl-demo'
