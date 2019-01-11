@@ -1,1 +1,3 @@
-include ':manual-demo', ':aidl-demo', ':messenger-demo'
+include ':manual-demo'
+include ':aidl-demo'
+include ':messenger-demo'
